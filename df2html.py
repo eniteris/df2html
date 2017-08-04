@@ -6,6 +6,7 @@ from copy import deepcopy
 from PIL import Image
 import numpy as np
 
+#Initialisation Variables
 height = 12
 width = 8
 out = "disp.html"
@@ -32,13 +33,12 @@ carray = [	["&nbsp;","☺","☻","♥","♦","♣","♠","•","◘","○","◙"
 
 #open image
 im = Image.open(sys.argv[1])
-im = im.convert('RGB')
+im = im.convert('RGB')	#convert to RGB from whatever
 arr = np.array(im)
-#arr = arr[1:len(arr)-1,1:len(arr[0])-1]
-arr = arr[:,:,:3]
+arr = arr[:,:,:3]	#remove alpha channel
 disp_arr = deepcopy(arr)
 
-#calc diffs
+#calc x_diffs
 diff = [0]*(len(arr)-1)
 max_diff = -1
 max_diff_i = -1
@@ -53,14 +53,13 @@ for j in range(0,len(arr)-1):
 		max_diff = diff[j]
 		max_diff_i = j
 
+#calc y_diffs
 min_ydiff = 999
 for i in range(0,len(ydiff)):
 	if min_ydiff > ydiff[i]:
 		min_ydiff = ydiff[i]
 
-#draw grid
-#horizontal grid
-
+#for each possible offset
 for u_offset in range(0,height):
 	disp_arr_bak = deepcopy(disp_arr)
 	f1=open(out,"w")
@@ -68,6 +67,7 @@ for u_offset in range(0,height):
 	dead = 0
 	d_offset = height-u_offset
 
+	#draw horizontal grid
 	u_work_i = max_diff_i + u_offset
 	d_work_i = max_diff_i - d_offset
 	while u_work_i < len(arr):
@@ -80,7 +80,7 @@ for u_offset in range(0,height):
 		d_work_i = d_work_i - height
 	top_y = d_work_i + height + 1
 
-	#vertical grid
+	#draw vertical grid
 	mod = [0]*width
 	for i in range(0,len(ydiff)):
 		if ydiff[i] == min_ydiff:
@@ -98,7 +98,7 @@ for u_offset in range(0,height):
 				disp_arr[j,i] = [255,255,255]
 	top_x = max_mod_i + 1
 
-
+	#print output
 	print("<head><link rel='stylesheet' type='text/css' href='./df.css'></head><body>",file=f1)
 
 	counter = 0
@@ -107,10 +107,12 @@ for u_offset in range(0,height):
 		fore_bak = [0,0,0]
 		for i in range(0,int(len(arr[0])/8)):
 			subarr = deepcopy(arr[top_y+j*height:top_y+j*height+height,top_x+i*width:top_x+i*width+width])
-			if len(subarr)<1 or len(subarr[0])<1:
+			if len(subarr)<1 or len(subarr[0])<1:	#break if tile is incomplete
 				break
-			back = deepcopy(subarr[0][0]).tolist()
+			back = deepcopy(subarr[0][0]).tolist()	#get background colour (top left pixel)
 			fore = [0,0,0]
+			
+			#reduce subarray to two colours
 			for k in range(0,len(subarr)):
 				for l in range(0,len(subarr[0])):
 					if (subarr[k][l]==back).all():
@@ -119,18 +121,22 @@ for u_offset in range(0,height):
 						fore = deepcopy(subarr[k][l]).tolist()
 						subarr[k][l] = [255,255,255]
 			subarr = np.array(Image.fromarray(subarr).convert("1",dither=Image.NONE))
+			
 			breakpoint = 0
+			
+			#compare to each curses tile
 			for curses_y in range(0,16):
 				for curses_x in range(0,16):
 					change = 0
 					subcurses = curses[curses_y*height:curses_y*height+height,curses_x*width:curses_x*width+width]
-					if len(subcurses)!=len(subarr) or len(subcurses[0])!=len(subarr[0]):
+					if len(subcurses)!=len(subarr) or len(subcurses[0])!=len(subarr[0]):	#break if partial tiles
 						breakpoint = 1
 						break;
-					if (subcurses==subarr).all() or (subcurses!=subarr).all():
-						if(subcurses!=subarr).all():
+					if (subcurses==subarr).all() or (subcurses!=subarr).all():	#if match
+						if(subcurses!=subarr).all():	#swap foreground and background colour if they are inverted
 							fore,back = back,fore
 
+						#html shenanigans
 						if (fore==fore_bak or (curses_y==0 and curses_x==0)) and back==back_bak:
 							if not(i):
 								print("<span>",end="",file=f1)
@@ -154,10 +160,10 @@ for u_offset in range(0,height):
 				if breakpoint:
 					break
 			if not(breakpoint):
-				if j!=int(len(arr)/12)-1:
+				if j!=int(len(arr)/12)-1:	#file doesn't fail on the last line
 					dead = 1
 				break;
-		if dead:
+		if dead:	#errors are present in the file
 			f1.close()
 			break;
 		print("</span><br>",file=f1)
@@ -166,9 +172,11 @@ for u_offset in range(0,height):
 	disp_arr = deepcopy(disp_arr_bak)
 print("</body>",end="",file=f1)
 f1.close()
-if dead:
+
+if dead:	#if no offsets work
 	f1=open(out,"w")
 	print("ERROR",file=f1)
-print(counter)
+	
+print(counter)	#print number of tiles
 #draw image	
 #Image.fromarray(disp_arr).show()
