@@ -1,0 +1,8 @@
+@font-face {
+	font-family: DF;
+	src: url(./font/PxPlus_IBM_VGA8.ttf) format("truetype");
+}
+body { 
+	font-family: DF;
+	background-color: black;
+}
