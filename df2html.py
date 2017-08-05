@@ -160,7 +160,7 @@ for u_offset in range(0,height):
 				if breakpoint:
 					break
 			if not(breakpoint):
-				if j!=int(len(arr)/12)-1:	#file doesn't fail on the last line
+				if j!=int(len(arr)/12)-1 and i!=int(len(arr[0])/8)-1:	#file doesn't fail on the last line
 					dead = 1
 				break;
 		if dead:	#errors are present in the file
