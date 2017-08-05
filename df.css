@@ -1,9 +1,9 @@
 @font-face {
-	font-family: DF;
-	src: url(./PxPlus_IBM_VGA8.ttf) format("truetype");
+	font-family: dfCurses;
+	src: url(./DF_Curses_8x12.ttf) format("truetype");
 }
 body { 
-	font-family: DF;
+	font-family: dfCurses;
 	background-color: black;
 	line-height:1;
 }
