@@ -10,3 +10,5 @@ For instance, this script converts this: ![map](https://i.imgur.com/fYxFDRi.png)
 Theoretically the program should work with most tilesets; all you have to do is adjust lines 9-12 for the tile size and path to tileset sheet. However, the program only works with 1 bit tilesets (no alpha or graphical tiles). Swap out the font file and the css file to change display fonts.
 
 Some extraneous code remains; drawing the grid lines isn't quite necessary, and neither is calculating the horizontal grid lines. Vertical grid lines seem to be work perfectly, given the one pixel gap between most characters, but there are probably edge cases where the vertical grid isn't detected properly.
+
+2022.04.25: Added a "quickfort" flag, that, if set to true, spits out quickfort blueprints to the shell. Vaguely tested.
