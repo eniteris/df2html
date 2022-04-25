@@ -7,6 +7,7 @@ from PIL import Image
 import numpy as np
 
 #Initialisation Variables
+quickfort = False
 height = 12
 width = 8
 out = "disp.html"
@@ -150,6 +151,25 @@ for u_offset in range(0,height):
 							print("</span><span style='color:rgb({},{},{});background-color:rgb({},{},{})'>".format(fore[0],fore[1],fore[2],back[0],back[1],back[2]),end="",file=f1)
 							change = 1
 						print(carray[curses_y][curses_x],end="",file=f1)
+						if(quickfort):
+							if(back != [0,0,0]):
+								glyph = carray[curses_y][curses_x]
+								if(glyph == "&nbsp;"):
+									print("d,",end="")
+								elif(glyph == "<"):
+									print("u,",end="")
+								elif(glyph == ">"):
+									print("j,",end="")
+								elif(glyph == "X"):
+									print("i,",end="")
+								elif(glyph == "_"):
+									print("h,",end="")
+								elif(glyph == "▲"):
+									print("r,",end="")
+								else:
+									print(" ,",end="")
+							else:
+								print(" ,",end="")
 #						print("</span>",end="",file=f1)
 						if curses_y!=0 or curses_x!=0 or change:
 							fore_bak = deepcopy(fore)
@@ -167,6 +187,8 @@ for u_offset in range(0,height):
 			f1.close()
 			break;
 		print("</span><br>",file=f1)
+		if(quickfort):
+			print("#")
 	if not(dead):
 		break
 	disp_arr = deepcopy(disp_arr_bak)
@@ -177,6 +199,6 @@ if dead:	#if no offsets work
 	f1=open(out,"w")
 	print("ERROR",file=f1)
 	
-print(counter)	#print number of tiles
+#print(counter)	#print number of tiles
 #draw image	
 #Image.fromarray(disp_arr).show()
